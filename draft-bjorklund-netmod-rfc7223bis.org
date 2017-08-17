@@ -1,0 +1,655 @@
+This document defines a YANG data model for the management of network
+interfaces. It is expected that interface-type-specific data models
+augment the generic interfaces data model defined in this document.
+The data model includes configuration data and state data (status
+information and counters for the collection of statistics).
+
+* Introduction
+
+This document defines a YANG ^RFC6020^ data model for the
+management of network interfaces. It is expected that
+interface-type-specific data models augment the generic interfaces
+data model defined in this document.
+
+Network interfaces are central to the management of many Internet
+protocols.  Thus, it is important to establish a common data model for
+how interfaces are identified, configured, and monitored.
+
+The data model includes configuration data and state data (status
+information and counters for the collection of statistics).
+
+** Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in BCP
+14 ^RFC2119^.
+
+The following terms are used within this document:
+
+- system-controlled interface: An interface is said to be
+  system-controlled if the system creates and deletes the interface
+  independently of what has been explicitly configured.  Examples are
+  interfaces representing physical hardware that appear and disappear
+  when hardware (e.g., a line card or hot-pluggable wireless
+  interface) is added or removed.  System-controlled interfaces may
+  also appear if a certain functionality is enabled (e.g., a loopback
+  interface might appear if the IP protocol stack is enabled).
+
+- user-controlled interface: An interface is said to be
+  user-controlled if the creation of the interface is controlled by
+  adding explicit interface configuration to the running configuration
+  datastore and the removal of the interface is controlled by removing
+  explicit interface configuration from the running configuration
+  datastore.  Examples are VLAN interfaces configured on a
+  system-controlled Ethernet interface.
+
+The following terms are defined in ^RFC6241^ and are not redefined
+here:
+
+- client
+- configuration data
+- server
+- state data
+
+The following terms are defined in ^RFC6020^ and are not redefined
+here:
+
+- augment
+- data model
+- data node
+- presence container
+
+** Tree Diagrams
+
+A simplified graphical representation of the data model is used in
+this document.  The meaning of the symbols in these
+diagrams is as follows:
+
+- Brackets "[" and "]" enclose list keys.
+- Abbreviations before data node names: "rw" means configuration
+(read-write), and "ro" means state data (read-only).
+- Symbols after data node names: "?" means an optional node, "!" means
+ a presence container, and "*" denotes a list and leaf-list.
+- Parentheses enclose choice and case nodes, and case nodes are also
+marked with a colon (":").
+- Ellipsis ("...") stands for contents of subtrees that are not shown.
+
+* Objectives
+
+This section describes some of the design objectives for the model
+presented in ^module^.
+
+- It is recognized that existing implementations will have to map the
+  interface data model defined in this memo to their proprietary
+  native data model.  To facilitate such mappings, the data model
+  should be simple.
+
+- The data model should be suitable for new implementations to use
+  as is, without requiring a mapping to a different native model.
+
+- References to interfaces should be as simple as possible,
+  preferably by using a single leafref.
+
+- The mapping to ifIndex ^RFC2863^ used by the Simple Network
+  Management Protocol (SNMP) to identify interfaces
+  must be clear.
+
+- The model must support interface layering: both (1) simple layering,
+  where one interface is layered on top of exactly one other
+  interface, and (2) more complex scenarios, where one interface
+  results from the aggregation of N other interfaces or when N
+  interfaces are multiplexed over one other interface.
+
+- The data model should support the pre-provisioning of interface
+  configuration, i.e., it should be possible to configure an interface
+  whose physical interface hardware is not present on the device.  It
+  is recommended that devices that support dynamic addition and
+  removal of physical interfaces also support pre-provisioning.
+
+- The data model should support physical interfaces as well as
+  logical interfaces.
+
+- The data model should include read-only counters in order to gather
+  statistics for sent and received octets and packets, received
+  packets with errors, and packets that could not be sent due to
+  errors.
+
+* Interfaces Data Model
+
+This document defines the YANG module "ietf-interfaces", which has the
+following structure:
+
+   +--rw interfaces
+   |  +--rw interface* [name]
+   |     +--rw name                        string
+   |     +--rw description?                string
+   |     +--rw type                        identityref
+   |     +--rw enabled?                    boolean
+   |     +--rw link-up-down-trap-enable?   enumeration
+   +--ro interfaces-state
+      +--ro interface* [name]
+         +--ro name               string
+         +--ro type               identityref
+         +--ro admin-status       enumeration
+         +--ro oper-status        enumeration
+         +--ro last-change?       yang:date-and-time
+         +--ro if-index           int32
+         +--ro phys-address?      yang:phys-address
+         +--ro higher-layer-if*   interface-state-ref
+         +--ro lower-layer-if*    interface-state-ref
+         +--ro speed?             yang:gauge64
+         +--ro statistics
+            +--ro discontinuity-time    yang:date-and-time
+            +--ro in-octets?            yang:counter64
+            +--ro in-unicast-pkts?      yang:counter64
+            +--ro in-broadcast-pkts?    yang:counter64
+            +--ro in-multicast-pkts?    yang:counter64
+            +--ro in-discards?          yang:counter32
+            +--ro in-errors?            yang:counter32
+            +--ro in-unknown-protos?    yang:counter32
+            +--ro out-octets?           yang:counter64
+            +--ro out-unicast-pkts?     yang:counter64
+            +--ro out-broadcast-pkts?   yang:counter64
+            +--ro out-multicast-pkts?   yang:counter64
+            +--ro out-discards?         yang:counter32
+            +--ro out-errors?           yang:counter32
+
+** The Interface Lists
+
+The data model for interfaces presented in this document uses a flat
+list of interfaces.  Each interface in the list is identified by its
+name.  Furthermore, each interface has a mandatory "type" leaf.
+
+The "iana-if-type" module ^RFC7224^ defines
+YANG identities for the interface types in the IANA-maintained "ifType
+definitions" registry.
+
+There is one list of configured interfaces ("/interfaces/interface"),
+and a separate list for the operational state of all interfaces
+("/interfaces-state/interface").
+
+It is expected that interface-type-specific data models augment the
+interface lists and possibly use the "type" leaf to make the
+augmentation conditional.
+
+As an example of such an interface-type-specific augmentation, consider
+this YANG snippet.  For a more complete example, see ^eth^.
+
+  import interfaces {
+      prefix "if";
+  }
+  import iana-if-type {
+    prefix ianaift;
+  }
+
+  augment "/if:interfaces/if:interface" {
+      when "if:type = 'ianaift:ethernetCsmacd'";
+
+      container ethernet {
+          leaf duplex {
+              ...
+          }
+      }
+  }
+
+For system-controlled interfaces, the "name" is the device-specific
+name of the interface.  The 'config false' list
+"/interfaces-state/interface" contains all existing interfaces on the
+device.
+
+If the device supports arbitrarily named user-controlled interfaces,
+the Network Configuration Protocol (NETCONF) server advertises the
+"arbitrary-names" feature.  If the device does not advertise this
+feature, the names of user-controlled interfaces MUST match the
+device's naming scheme.  How a client can learn the naming scheme of
+such devices is outside the scope of this document.  See
+^router-restricted^ and ^router-arbitrary^ for examples.
+
+When a system-controlled interface is created by the system, the
+system tries to apply the interface configuration in
+"/interfaces/interface" with the same name as the new interface.  If no
+such interface configuration is found, or if the configured type does
+not match the real interface type, the system creates the interface
+without applying explicit configuration.
+
+When a user-controlled interface is created, the configuration
+determines the name of the interface.
+
+Depending on the operating system and the physical attachment point to
+which a network interface may be attached or removed, it may be
+impossible for an implementation to provide predictable and consistent
+names for system-controlled interfaces across insertion/removal cycles
+as well as in anticipation of initial insertion.  The ability to
+provide configurations for such interfaces is therefore dependent on
+the implementation and cannot be assumed in all cases.
+
+** Interface References
+
+An interface is identified by its name, which is unique within the
+server.  This property is captured in the "interface-ref" and
+"interface-state-ref" typedefs, which other YANG modules SHOULD use
+when they need to reference a configured interface or operationally
+used interface, respectively.
+
+** Interface Layering
+
+There is no generic mechanism for how an interface is configured to be
+layered on top of some other interface.  It is expected that
+interface-type-specific models define their own data nodes for
+interface layering by using "interface-ref" types to reference lower
+layers.
+
+Below is an example of a model with such nodes.  For a more complete
+example, see ^eth-bonding^.
+
+  import interfaces {
+      prefix "if";
+  }
+  import iana-if-type {
+    prefix ianaift;
+  }
+
+  augment "/if:interfaces/if:interface" {
+      when "if:type = 'ianaift:ieee8023adLag'";
+
+      leaf-list slave-if {
+          type if:interface-ref;
+          must "/if:interfaces/if:interface[if:name = current()]"
+             + "/if:type = 'ianaift:ethernetCsmacd'" {
+              description
+                  "The type of a slave interface must be
+                   'ethernetCsmacd'.";
+          }
+      }
+      // other bonding config params, failover times, etc.
+  }
+
+While the interface layering is configured in interface-type-specific
+models, two generic state data leaf-lists, "higher-layer-if" and
+"lower-layer-if", represent a read-only view of the interface layering
+hierarchy.
+
+* Relationship to the IF-MIB
+
+If the device implements the IF-MIB ^RFC2863^, each entry in the
+"/interfaces-state/interface" list is typically mapped to one ifEntry.
+The "if-index" leaf MUST contain the value of the corresponding
+ifEntry's ifIndex.
+
+In most cases, the "name" of an "/interfaces-state/interface" entry is
+mapped to ifName.  The IF-MIB allows two different ifEntries to have
+the same ifName.  Devices that support this feature and also support
+the data model defined in this document cannot have a 1-1 mapping
+between the "name" leaf and ifName.
+
+The configured "description" of an "interface" has traditionally been
+mapped to ifAlias in some implementations.  This document allows this
+mapping, but implementers should be aware of the differences in the
+value space and persistence for these objects.  See the YANG module
+definition of the leaf "description" in ^module^ for details.
+
+The IF-MIB also defines the writable object ifPromiscuousMode.  Since
+this object typically is not implemented as a configuration object by
+SNMP agents, it is not mapped to the "ietf-interfaces" module.
+
+The ifMtu object from the IF-MIB is not mapped to the "ietf-interfaces"
+module.  It is expected that interface-type-specific YANG modules
+provide interface-type-specific MTU leafs by augmenting the
+"ietf-interfaces" model.
+
+There are a number of counters in the IF-MIB that exist in two
+versions: one with 32 bits and one with 64 bits.  The 64-bit versions
+were added to support high-speed interfaces with a data rate greater
+than 20,000,000 bits/second.  Today's implementations generally
+support such high-speed interfaces, and hence only 64-bit counters are
+provided in this data model.  Note that NETCONF and SNMP may differ in
+the time granularity in which they provide access to the counters.
+For example, it is common that SNMP implementations cache counter
+values for some time.
+
+The objects ifDescr and ifConnectorPresent from the IF-MIB are not
+mapped to the "ietf-interfaces" module.
+
+The following tables list the YANG data nodes with corresponding
+objects in the IF-MIB.
+
+-- YANG State Data Nodes and Related IF-MIB Objects
+| YANG data node in /interfaces-state/interface | IF-MIB object              |
+|-----------------------------------------------+----------------------------|
+| name                                          | ifName                     |
+| type                                          | ifType                     |
+| admin-status                                  | ifAdminStatus              |
+| oper-status                                   | ifOperStatus               |
+| last-change                                   | ifLastChange               |
+| if-index                                      | ifIndex                    |
+| link-up-down-trap-enable                      | ifLinkUpDownTrapEnable     |
+| phys-address                                  | ifPhysAddress              |
+| higher-layer-if and lower-layer-if            | ifStackTable               |
+| speed                                         | ifSpeed and ifHighSpeed    |
+| discontinuity-time                            | ifCounterDiscontinuityTime |
+| in-octets                                     | ifHCInOctets               |
+| in-unicast-pkts                               | ifHCInUcastPkts            |
+| in-broadcast-pkts                             | ifHCInBroadcastPkts        |
+| in-multicast-pkts                             | ifHCInMulticastPkts        |
+| in-discards                                   | ifInDiscards               |
+| in-errors                                     | ifInErrors                 |
+| in-unknown-protos                             | ifInUnknownProtos          |
+| out-octets                                    | ifHCOutOctets              |
+| out-unicast-pkts                              | ifHCOutUcastPkts           |
+| out-broadcast-pkts                            | ifHCOutBroadcastPkts       |
+| out-multicast-pkts                            | ifHCOutMulticastPkts       |
+| out-discards                                  | ifOutDiscards              |
+| out-errors                                    | ifOutErrors                |
+
+-- YANG Config Data Nodes and Related IF-MIB Objects
+| YANG data node in /interfaces/interface | IF-MIB object |
+|-----------------------------------------+---------------|
+| description                             | ifAlias       |
+
+* Interfaces YANG Module @module@
+
+This YANG module imports typedefs from ^RFC6991^.
+
+!! include-figure ietf-interfaces.yang extract-to="ietf-interfaces@2014-05-08.yang"
+
+* IANA Considerations @iana@
+
+This document registers a URI in the "IETF XML Registry" ^RFC3688^.
+Following the format in RFC 3688, the following registration has been
+made.
+
+  URI: urn:ietf:params:xml:ns:yang:ietf-interfaces
+
+  Registrant Contact: The IESG.
+
+  XML: N/A, the requested URI is an XML namespace.
+
+This document registers a YANG module in the "YANG Module Names"
+registry ^RFC6020^.
+
+  name:         ietf-interfaces
+  namespace:    urn:ietf:params:xml:ns:yang:ietf-interfaces
+  prefix:       if
+  reference:    RFC 7223
+
+* Security Considerations
+
+The YANG module defined in this memo is designed to be accessed via
+the NETCONF protocol ^RFC6241^.  The lowest NETCONF layer is the
+secure transport layer and the mandatory-to-implement secure transport
+is SSH ^RFC6242^.  The NETCONF access control model ^RFC6536^ provides
+the means to restrict access for particular NETCONF users to a
+pre-configured subset of all available NETCONF protocol operations and
+content.
+
+There are a number of data nodes defined in the YANG module
+which are writable/creatable/deletable (i.e., config true,
+which is the default).  These data nodes may be considered sensitive
+or vulnerable in some network environments.  Write operations (e.g.,
+<edit-config>) to these data nodes without proper protection can have a
+negative effect on network operations.  These are the subtrees and
+data nodes and their sensitivity/vulnerability:
+
+= /interfaces/interface:
+This list specifies the configured interfaces on a device.
+Unauthorized access to this list could cause the device to ignore
+packets it should receive and process.
+= /interfaces/interface/enabled:
+This leaf controls whether an interface is enabled or not.  Unauthorized
+access to this leaf could cause the device to ignore packets it should
+receive and process.
+
+* Acknowledgments
+
+The author wishes to thank Alexander Clemm, Per Hedeland, Ladislav
+Lhotka, and Juergen Schoenwaelder for their helpful comments.
+
+*! start-appendix
+
+* Example: Ethernet Interface Module @eth@
+
+This section gives a simple example of how an Ethernet interface
+module could be defined.  It demonstrates how media-specific
+configuration parameters can be conditionally augmented to the generic
+interface list.  It also shows how operational state parameters can be
+conditionally augmented to the operational interface list.  The
+example is not intended as a complete module for Ethernet
+configuration.
+
+!! include-figure ex-ethernet.yang
+
+* Example: Ethernet Bonding Interface Module @eth-bonding@
+
+This section gives an example of how interface layering can be
+defined.  An Ethernet bonding interface that bonds
+several Ethernet interfaces into one logical interface is defined.
+
+!! include-figure ex-ethernet-bonding.yang
+
+* Example: VLAN Interface Module @vlan@
+
+This section gives an example of how a VLAN interface module can be
+defined.
+
+!! include-figure ex-vlan.yang
+
+* Example: NETCONF <get> Reply @get@
+
+This section gives an example of a reply to the NETCONF <get> request
+for a device that implements the example data models above.
+
+!! include-figure ex-get-reply.load
+
+* Examples: Interface Naming Schemes
+
+This section gives examples of some implementation strategies.
+
+The examples make use of the example data model "ex-vlan" (see ^vlan^)
+to show how user-controlled interfaces can be configured.
+
+** Router with Restricted Interface Names @router-restricted@
+
+In this example, a router has support for 4 line cards, each with 8
+ports.  The slots for the cards are physically numbered from 0 to 3,
+and the ports on each card from 0 to 7.  Each card has Fast Ethernet
+or Gigabit Ethernet ports.
+
+The device-specific names for these physical interfaces are
+"fastethernet-N/M" or "gigabitethernet-N/M".
+
+The name of a VLAN interface is restricted to the form
+"<physical-interface-name>.<subinterface-number>".
+
+It is assumed that the operator is aware of this naming scheme.  The
+implementation auto-initializes the value for "type" based on the
+interface name.
+
+The NETCONF server does not advertise the "arbitrary-names" feature in
+the <hello> message.
+
+An operator can configure a physical interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>fastethernet-1/0</name>
+  </interface>
+
+When the server processes this request, it will set the leaf "type" to
+"ianaift:ethernetCsmacd".  Thus, if the client performs a <get-config>
+right after the <edit-config> above, it will get:
+
+  <interface>
+    <name>fastethernet-1/0</name>
+    <type>ianaift:ethernetCsmacd</type>
+  </interface>
+
+The client can configure a VLAN interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>fastethernet-1/0.10005</name>
+    <type>ianaift:l2vlan</type>
+    <vlan:base-interface>fastethernet-1/0</vlan:base-interface>
+    <vlan:vlan-id>5</vlan:vlan-id>
+  </interface>
+
+If the client tries to change the type of the physical interface with
+an <edit-config> containing:
+
+  <interface nc:operation="merge">
+    <name>fastethernet-1/0</name>
+    <type>ianaift:tunnel</type>
+  </interface>
+
+then the server will reply with an "invalid-value" error, since the
+new type does not match the name.
+
+** Router with Arbitrary Interface Names @router-arbitrary@
+
+In this example, a router has support for 4 line cards, each with 8
+ports.  The slots for the cards are physically numbered from 0 to 3,
+and the ports on each card from 0 to 7.  Each card has Fast Ethernet
+or Gigabit Ethernet ports.
+
+The device-specific names for these physical interfaces are
+"fastethernet-N/M" or "gigabitethernet-N/M".
+
+The implementation does not restrict the user-controlled interface
+names.  This allows an operator to more easily apply the interface
+configuration to a different interface.  However, the additional level
+of indirection also makes it a bit more complex to map interface names
+found in other protocols to configuration entries.
+
+The NETCONF server advertises the "arbitrary-names" feature in the
+<hello> message.
+
+Physical interfaces are configured as in ^router-restricted^.
+
+An operator can configure a VLAN interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>acme-interface</name>
+    <type>ianaift:l2vlan</type>
+    <vlan:base-interface>fastethernet-1/0</vlan:base-interface>
+    <vlan:vlan-id>5</vlan:vlan-id>
+  </interface>
+
+If necessary, the operator can move the configuration named
+"acme-interface" over to a different physical interface with an
+<edit-config> containing:
+
+  <interface nc:operation="merge">
+    <name>acme-interface</name>
+    <vlan:base-interface>fastethernet-1/1</vlan:base-interface>
+  </interface>
+
+** Ethernet Switch with Restricted Interface Names
+
+In this example, an Ethernet switch has a number of ports, each
+identified by a simple port number.
+
+The device-specific names for the physical interfaces are numbers that
+match the physical port number.
+
+An operator can configure a physical interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>6</name>
+  </interface>
+
+When the server processes this request, it will set the leaf "type" to
+"ianaift:ethernetCsmacd".  Thus, if the client performs a <get-config>
+right after the <edit-config> above, it will get:
+
+  <interface>
+    <name>6</name>
+    <type>ianaift:ethernetCsmacd</type>
+  </interface>
+
+** Generic Host with Restricted Interface Names @generic-restricted@
+
+In this example, a generic host has interfaces named by the kernel.
+The system identifies the physical interface by the name assigned by
+the operating system to the interface.
+
+The name of a VLAN interface is restricted to the form
+"<physical-interface-name>:<vlan-number>".
+
+The NETCONF server does not advertise the "arbitrary-names" feature in
+the <hello> message.
+
+An operator can configure an interface by sending an <edit-config>
+containing:
+
+  <interface nc:operation="create">
+    <name>eth8</name>
+  </interface>
+
+When the server processes this request, it will set the leaf "type" to
+"ianaift:ethernetCsmacd".  Thus, if the client performs a <get-config>
+right after the <edit-config> above, it will get:
+
+  <interface>
+    <name>eth8</name>
+    <type>ianaift:ethernetCsmacd</type>
+  </interface>
+
+The client can configure a VLAN interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>eth8:5</name>
+    <type>ianaift:l2vlan</type>
+    <vlan:base-interface>eth8</vlan:base-interface>
+    <vlan:vlan-id>5</vlan:vlan-id>
+  </interface>
+
+** Generic Host with Arbitrary Interface Names
+
+In this example, a generic host has interfaces named by the kernel.
+The system identifies the physical interface by the name assigned by
+the operating system to the interface.
+
+The implementation does not restrict the user-controlled interface
+names.  This allows an operator to more easily apply the interface
+configuration to a different interface.  However, the additional level
+of indirection also makes it a bit more complex to map interface names
+found in other protocols to configuration entries.
+
+The NETCONF server advertises the "arbitrary-names" feature in the
+<hello> message.
+
+Physical interfaces are configured as in ^generic-restricted^.
+
+An operator can configure a VLAN interface by sending an
+<edit-config> containing:
+
+  <interface nc:operation="create">
+    <name>acme-interface</name>
+    <type>ianaift:l2vlan</type>
+    <vlan:base-interface>eth8</vlan:base-interface>
+    <vlan:vlan-id>5</vlan:vlan-id>
+  </interface>
+
+If necessary, the operator can move the configuration named
+"acme-interface" over to a different physical interface with an
+<edit-config> containing:
+
+  <interface nc:operation="merge">
+    <name>acme-interface</name>
+    <vlan:base-interface>eth3</vlan:base-interface>
+  </interface>
+
+{{document:
+    name ;
+    ipr trust200902;
+    category std;
+    references references.xml;
+    obsoletes rfc7223;
+    title "A YANG Data Model for Interface Management";
+    abbreviation "YANG Interface Management";
+    contributor "author:Martin Bjorklund:Tail-f Systems:mbj@tail-f.com";
+}}

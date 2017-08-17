@@ -1,0 +1,34 @@
+module ex-ethernet-bonding {
+  namespace "http://example.com/ethernet-bonding";
+  prefix "bond";
+
+  import ietf-interfaces {
+    prefix if;
+  }
+  import iana-if-type {
+    prefix ianaift;
+  }
+
+
+
+  augment "/if:interfaces/if:interface" {
+    when "if:type = 'ianaift:ieee8023adLag'";
+
+    leaf-list slave-if {
+      type if:interface-ref;
+      must "/if:interfaces/if:interface[if:name = current()]"
+         + "/if:type = 'ianaift:ethernetCsmacd'" {
+        description
+          "The type of a slave interface must be 'ethernetCsmacd'.";
+      }
+    }
+    leaf bonding-mode {
+      type enumeration {
+        enum round-robin;
+        enum active-backup;
+        enum broadcast;
+      }
+    }
+    // other bonding config params, failover times, etc.
+  }
+}
