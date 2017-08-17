@@ -70,7 +70,7 @@ diagrams is as follows:
 - Abbreviations before data node names: "rw" means configuration
 (read-write), and "ro" means state data (read-only).
 - Symbols after data node names: "?" means an optional node, "!" means
- a presence container, and "*" denotes a list and leaf-list.
+ a presence container, and "*" denotes either a list or a leaf-list.
 - Parentheses enclose choice and case nodes, and case nodes are also
 marked with a colon (":").
 - Ellipsis ("...") stands for contents of subtrees that are not shown.
