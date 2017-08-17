@@ -5,7 +5,7 @@
 output_base = draft-bjorklund-netmod-rfc7223bis
 draft = $(output_base).org
 examples =
-trees =
+trees = ietf-interfaces.tree
 std_yang =
 ex_yang =
 references_src = references.txt
@@ -86,8 +86,12 @@ validate-ex-yang:
 
 validate-ex-xml:
 	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
-                yang2dsdl -j -t get-reply -v ex-get-reply.xml \
-                ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang
+	  yang2dsdl -j -t get-reply -v ex-get-data-reply.xml \
+	  ../datastore-dt/ietf-origin.yang \
+	  ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang;
+	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
+	  yang2dsdl -j -t get-config-reply -v ex-get-config-reply.xml \
+	  ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang
 
 ${references_xml}: ${references_src}
 	$(oxtradoc) -m mkback $< > $@

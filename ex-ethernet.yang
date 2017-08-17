@@ -9,7 +9,7 @@ module ex-ethernet {
     prefix ianaift;
   }
 
-  // configuration parameters for Ethernet interfaces
+  // configuration and state parameters for Ethernet interfaces
   augment "/if:interfaces/if:interface" {
     when "if:type = 'ianaift:ethernetCsmacd'";
 
@@ -37,22 +37,13 @@ module ex-ethernet {
             }
           }
         }
-
       }
-      // other Ethernet-specific params...
-    }
-  }
-
-  // operational state parameters for Ethernet interfaces
-  augment "/if:interfaces-state/if:interface" {
-    when "if:type = 'ianaift:ethernetCsmacd'";
-
-    container ethernet {
-      leaf duplex {
+      leaf duplexx {
         type enumeration {
           enum "half";
           enum "full";
         }
+        config false;
       }
       // other Ethernet-specific params...
     }

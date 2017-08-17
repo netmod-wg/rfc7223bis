@@ -1,12 +1,13 @@
 This document defines a YANG data model for the management of network
 interfaces. It is expected that interface-type-specific data models
 augment the generic interfaces data model defined in this document.
-The data model includes configuration data and state data (status
-information and counters for the collection of statistics).
+The data model includes definitions for configuration and system state (status
+information and counters for the collection of statistics).  This
+document obsoletes RFC 7223.
 
 * Introduction
 
-This document defines a YANG ^RFC6020^ data model for the
+This document defines a YANG ^RFC7950^ data model for the
 management of network interfaces. It is expected that
 interface-type-specific data models augment the generic interfaces
 data model defined in this document.
@@ -17,6 +18,16 @@ how interfaces are identified, configured, and monitored.
 
 The data model includes configuration data and state data (status
 information and counters for the collection of statistics).
+
+This version of the interfaces data model supports the Network
+Management Datastore Architecture (NMDA)
+^I-D.ietf-netmod-revised-datastores^.
+
+** Summary of Changes from RFC 7223
+
+The "/interfaces-state" subtree with "config false" data nodes is
+deprecated.  All "config false" data nodes are now present in the
+"/interfaces" subtree.
 
 ** Terminology
 
@@ -44,15 +55,18 @@ The following terms are used within this document:
   datastore.  Examples are VLAN interfaces configured on a
   system-controlled Ethernet interface.
 
-The following terms are defined in ^RFC6241^ and are not redefined
-here:
+The following terms are defined in
+^I-D.ietf-netmod-revised-datastores^ and are not redefined here:
 
 - client
-- configuration data
 - server
-- state data
+- configuration
+- system state
+- operational state datastore
+- running configuration datastore
+- startup configuration datastore
 
-The following terms are defined in ^RFC6020^ and are not redefined
+The following terms are defined in ^RFC7950^ and are not redefined
 here:
 
 - augment
@@ -120,57 +134,21 @@ presented in ^module^.
 This document defines the YANG module "ietf-interfaces", which has the
 following structure:
 
-   +--rw interfaces
-   |  +--rw interface* [name]
-   |     +--rw name                        string
-   |     +--rw description?                string
-   |     +--rw type                        identityref
-   |     +--rw enabled?                    boolean
-   |     +--rw link-up-down-trap-enable?   enumeration
-   +--ro interfaces-state
-      +--ro interface* [name]
-         +--ro name               string
-         +--ro type               identityref
-         +--ro admin-status       enumeration
-         +--ro oper-status        enumeration
-         +--ro last-change?       yang:date-and-time
-         +--ro if-index           int32
-         +--ro phys-address?      yang:phys-address
-         +--ro higher-layer-if*   interface-state-ref
-         +--ro lower-layer-if*    interface-state-ref
-         +--ro speed?             yang:gauge64
-         +--ro statistics
-            +--ro discontinuity-time    yang:date-and-time
-            +--ro in-octets?            yang:counter64
-            +--ro in-unicast-pkts?      yang:counter64
-            +--ro in-broadcast-pkts?    yang:counter64
-            +--ro in-multicast-pkts?    yang:counter64
-            +--ro in-discards?          yang:counter32
-            +--ro in-errors?            yang:counter32
-            +--ro in-unknown-protos?    yang:counter32
-            +--ro out-octets?           yang:counter64
-            +--ro out-unicast-pkts?     yang:counter64
-            +--ro out-broadcast-pkts?   yang:counter64
-            +--ro out-multicast-pkts?   yang:counter64
-            +--ro out-discards?         yang:counter32
-            +--ro out-errors?           yang:counter32
+!! include-figure ietf-interfaces.tree
 
-** The Interface Lists
+** The Interface List
 
 The data model for interfaces presented in this document uses a flat
-list of interfaces.  Each interface in the list is identified by its
-name.  Furthermore, each interface has a mandatory "type" leaf.
+list of interfaces ("/interfaces/interface").  Each interface in the
+list is identified by its name.  Furthermore, each interface has a
+mandatory "type" leaf.
 
 The "iana-if-type" module ^RFC7224^ defines
 YANG identities for the interface types in the IANA-maintained "ifType
 definitions" registry.
 
-There is one list of configured interfaces ("/interfaces/interface"),
-and a separate list for the operational state of all interfaces
-("/interfaces-state/interface").
-
 It is expected that interface-type-specific data models augment the
-interface lists and possibly use the "type" leaf to make the
+interface list and possibly use the "type" leaf to make the
 augmentation conditional.
 
 As an example of such an interface-type-specific augmentation, consider
@@ -194,24 +172,23 @@ this YANG snippet.  For a more complete example, see ^eth^.
   }
 
 For system-controlled interfaces, the "name" is the device-specific
-name of the interface.  The 'config false' list
-"/interfaces-state/interface" contains all existing interfaces on the
-device.
+name of the interface.
 
 If the device supports arbitrarily named user-controlled interfaces,
-the Network Configuration Protocol (NETCONF) server advertises the
-"arbitrary-names" feature.  If the device does not advertise this
-feature, the names of user-controlled interfaces MUST match the
-device's naming scheme.  How a client can learn the naming scheme of
-such devices is outside the scope of this document.  See
-^router-restricted^ and ^router-arbitrary^ for examples.
+then the server will advertise the "arbitrary-names" feature.  If the
+server does not advertise this feature, the names of user-controlled
+interfaces MUST match the device's naming scheme.  How a client can
+learn the naming scheme of such devices is outside the scope of this
+document.  See ^router-restricted^ and ^router-arbitrary^ for
+examples.
 
-When a system-controlled interface is created by the system, the
-system tries to apply the interface configuration in
-"/interfaces/interface" with the same name as the new interface.  If no
-such interface configuration is found, or if the configured type does
-not match the real interface type, the system creates the interface
-without applying explicit configuration.
+When a system-controlled interface is created in the operational state
+datastore by the system, the system tries to apply the interface
+configuration in the intended configuration datastore with the same
+name as the new interface.  If no such interface configuration is
+found, or if the configured type does not match the real interface
+type, the system creates the interface without applying explicit
+configuration.
 
 When a user-controlled interface is created, the configuration
 determines the name of the interface.
@@ -227,10 +204,9 @@ the implementation and cannot be assumed in all cases.
 ** Interface References
 
 An interface is identified by its name, which is unique within the
-server.  This property is captured in the "interface-ref" and
-"interface-state-ref" typedefs, which other YANG modules SHOULD use
-when they need to reference a configured interface or operationally
-used interface, respectively.
+server.  This property is captured in the "interface-ref" and typedef,
+which other YANG modules SHOULD use when they need to reference an
+interface.
 
 ** Interface Layering
 
@@ -273,11 +249,11 @@ hierarchy.
 * Relationship to the IF-MIB
 
 If the device implements the IF-MIB ^RFC2863^, each entry in the
-"/interfaces-state/interface" list is typically mapped to one ifEntry.
-The "if-index" leaf MUST contain the value of the corresponding
-ifEntry's ifIndex.
+"/interfaces/interface" list in the operational state datastore is
+typically mapped to one ifEntry.  The "if-index" leaf MUST contain the
+value of the corresponding ifEntry's ifIndex.
 
-In most cases, the "name" of an "/interfaces-state/interface" entry is
+In most cases, the "name" of an "/interfaces/interface" entry is
 mapped to ifName.  The IF-MIB allows two different ifEntries to have
 the same ifName.  Devices that support this feature and also support
 the data model defined in this document cannot have a 1-1 mapping
@@ -314,44 +290,40 @@ mapped to the "ietf-interfaces" module.
 The following tables list the YANG data nodes with corresponding
 objects in the IF-MIB.
 
--- YANG State Data Nodes and Related IF-MIB Objects
-| YANG data node in /interfaces-state/interface | IF-MIB object              |
-|-----------------------------------------------+----------------------------|
-| name                                          | ifName                     |
-| type                                          | ifType                     |
-| admin-status                                  | ifAdminStatus              |
-| oper-status                                   | ifOperStatus               |
-| last-change                                   | ifLastChange               |
-| if-index                                      | ifIndex                    |
-| link-up-down-trap-enable                      | ifLinkUpDownTrapEnable     |
-| phys-address                                  | ifPhysAddress              |
-| higher-layer-if and lower-layer-if            | ifStackTable               |
-| speed                                         | ifSpeed and ifHighSpeed    |
-| discontinuity-time                            | ifCounterDiscontinuityTime |
-| in-octets                                     | ifHCInOctets               |
-| in-unicast-pkts                               | ifHCInUcastPkts            |
-| in-broadcast-pkts                             | ifHCInBroadcastPkts        |
-| in-multicast-pkts                             | ifHCInMulticastPkts        |
-| in-discards                                   | ifInDiscards               |
-| in-errors                                     | ifInErrors                 |
-| in-unknown-protos                             | ifInUnknownProtos          |
-| out-octets                                    | ifHCOutOctets              |
-| out-unicast-pkts                              | ifHCOutUcastPkts           |
-| out-broadcast-pkts                            | ifHCOutBroadcastPkts       |
-| out-multicast-pkts                            | ifHCOutMulticastPkts       |
-| out-discards                                  | ifOutDiscards              |
-| out-errors                                    | ifOutErrors                |
-
--- YANG Config Data Nodes and Related IF-MIB Objects
-| YANG data node in /interfaces/interface | IF-MIB object |
-|-----------------------------------------+---------------|
-| description                             | ifAlias       |
+-- YANG Data Nodes and Related IF-MIB Objects
+| YANG data node in /interfaces/interface | IF-MIB object              |
+|-----------------------------------------+----------------------------|
+| name                                    | ifName                     |
+| type                                    | ifType                     |
+| description                             | ifAlias                    |
+| admin-status                            | ifAdminStatus              |
+| oper-status                             | ifOperStatus               |
+| last-change                             | ifLastChange               |
+| if-index                                | ifIndex                    |
+| link-up-down-trap-enable                | ifLinkUpDownTrapEnable     |
+| phys-address                            | ifPhysAddress              |
+| higher-layer-if and lower-layer-if      | ifStackTable               |
+| speed                                   | ifSpeed and ifHighSpeed    |
+| discontinuity-time                      | ifCounterDiscontinuityTime |
+| in-octets                               | ifHCInOctets               |
+| in-unicast-pkts                         | ifHCInUcastPkts            |
+| in-broadcast-pkts                       | ifHCInBroadcastPkts        |
+| in-multicast-pkts                       | ifHCInMulticastPkts        |
+| in-discards                             | ifInDiscards               |
+| in-errors                               | ifInErrors                 |
+| in-unknown-protos                       | ifInUnknownProtos          |
+| out-octets                              | ifHCOutOctets              |
+| out-unicast-pkts                        | ifHCOutUcastPkts           |
+| out-broadcast-pkts                      | ifHCOutBroadcastPkts       |
+| out-multicast-pkts                      | ifHCOutMulticastPkts       |
+| out-discards                            | ifOutDiscards              |
+| out-errors                              | ifOutErrors                |
 
 * Interfaces YANG Module @module@
 
 This YANG module imports typedefs from ^RFC6991^.
 
-!! include-figure ietf-interfaces.yang extract-to="ietf-interfaces@2014-05-08.yang"
+!! include-figure ietf-interfaces.yang extract-to="ietf-interfaces@2017-08-14.yang"
 
 * IANA Considerations @iana@
 
@@ -371,7 +343,7 @@ registry ^RFC6020^.
   name:         ietf-interfaces
   namespace:    urn:ietf:params:xml:ns:yang:ietf-interfaces
   prefix:       if
-  reference:    RFC 7223
+  reference:    RFC XXXX
 
 * Security Considerations
 
@@ -434,12 +406,21 @@ defined.
 
 !! include-figure ex-vlan.yang
 
-* Example: NETCONF <get> Reply @get@
+* Example: NETCONF <get-config> Reply @get@
 
-This section gives an example of a reply to the NETCONF <get> request
-for a device that implements the example data models above.
+This section gives an example of a reply to the NETCONF <get-config>
+request for <running> for a device that implements the example data
+models above.
 
-!! include-figure ex-get-reply.load
+!! include-figure ex-get-config-reply.load
+
+* Example: NETCONF <get-data> Reply @get@
+
+This section gives an example of a reply to the NETCONF <get-data>
+request for <operational> for a device that implements the example
+data models above.
+
+!! include-figure ex-get-data-reply.load
 
 * Examples: Interface Naming Schemes
 

@@ -2,48 +2,16 @@
     xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
     message-id="101">
   <data>
-
     <interfaces
         xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"
         xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type"
-        xmlns:vlan="http://example.com/vlan">
+        xmlns:vlan="http://example.com/vlan"
+        xmlns:or="urn:ietf:params:xml:ns:yang:ietf-origin">
 
-      <interface>
+      <interface or:origin="or:intended">
         <name>eth0</name>
         <type>ianaift:ethernetCsmacd</type>
         <enabled>false</enabled>
-      </interface>
-
-      <interface>
-        <name>eth1</name>
-        <type>ianaift:ethernetCsmacd</type>
-        <enabled>true</enabled>
-        <vlan:vlan-tagging>true</vlan:vlan-tagging>
-      </interface>
-
-      <interface>
-        <name>eth1.10</name>
-        <type>ianaift:l2vlan</type>
-        <enabled>true</enabled>
-        <vlan:base-interface>eth1</vlan:base-interface>
-        <vlan:vlan-id>10</vlan:vlan-id>
-      </interface>
-
-      <interface>
-        <name>lo1</name>
-        <type>ianaift:softwareLoopback</type>
-        <enabled>true</enabled>
-      </interface>
-
-    </interfaces>
-
-    <interfaces-state
-        xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"
-        xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
-
-      <interface>
-        <name>eth0</name>
-        <type>ianaift:ethernetCsmacd</type>
         <admin-status>down</admin-status>
         <oper-status>down</oper-status>
         <if-index>2</if-index>
@@ -54,9 +22,10 @@
         </statistics>
       </interface>
 
-      <interface>
+      <interface or:origin="or:intended">
         <name>eth1</name>
         <type>ianaift:ethernetCsmacd</type>
+        <enabled>true</enabled>
         <admin-status>up</admin-status>
         <oper-status>up</oper-status>
         <if-index>7</if-index>
@@ -66,11 +35,13 @@
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
           <!-- counters now shown here -->
         </statistics>
+        <vlan:vlan-tagging>true</vlan:vlan-tagging>
       </interface>
 
-      <interface>
+      <interface or:origin="or:intended">
         <name>eth1.10</name>
         <type>ianaift:l2vlan</type>
+        <enabled>true</enabled>
         <admin-status>up</admin-status>
         <oper-status>up</oper-status>
         <if-index>9</if-index>
@@ -79,10 +50,12 @@
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
           <!-- counters now shown here -->
         </statistics>
+        <vlan:base-interface>eth1</vlan:base-interface>
+        <vlan:vlan-id>10</vlan:vlan-id>
       </interface>
 
       <!-- This interface is not configured -->
-      <interface>
+      <interface or:origin="or:system">
         <name>eth2</name>
         <type>ianaift:ethernetCsmacd</type>
         <admin-status>down</admin-status>
@@ -95,9 +68,10 @@
         </statistics>
       </interface>
 
-      <interface>
+      <interface or:origin="or:intended">
         <name>lo1</name>
         <type>ianaift:softwareLoopback</type>
+        <enabled>true</enabled>
         <admin-status>up</admin-status>
         <oper-status>up</oper-status>
         <if-index>1</if-index>
@@ -107,6 +81,6 @@
         </statistics>
       </interface>
 
-    </interfaces-state>
+    </interfaces>
   </data>
 </rpc-reply>

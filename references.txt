@@ -5,6 +5,8 @@
     ietf-ref RFC3688;
     ietf-ref RFC6020;
     ietf-ref RFC6991;
+    ietf-ref RFC7950;
+    ietf-ref I-D.ietf-netmod-revised-datastores;
 }}
 
 {{references:
