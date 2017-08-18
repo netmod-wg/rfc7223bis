@@ -691,6 +691,7 @@ module ietf-interfaces {
 
     list interface {
       key "name";
+      status deprecated;
 
       description
         "The list of interfaces on the device.
@@ -701,6 +702,7 @@ module ietf-interfaces {
 
       leaf name {
         type string;
+        status deprecated;
         description
           "The name of the interface.
 
@@ -718,6 +720,7 @@ module ietf-interfaces {
           base interface-type;
         }
         mandatory true;
+        status deprecated;
         description
           "The type of the interface.";
         reference
@@ -744,6 +747,7 @@ module ietf-interfaces {
           }
         }
         mandatory true;
+        status deprecated;
         description
           "The desired state of the interface.
 
@@ -792,6 +796,7 @@ module ietf-interfaces {
           }
         }
         mandatory true;
+        status deprecated;
         description
           "The current operational state of the interface.
 
@@ -802,6 +807,7 @@ module ietf-interfaces {
 
       leaf last-change {
         type yang:date-and-time;
+        status deprecated;
         description
           "The time the interface entered its current operational
            state.  If the current state was entered prior to the
@@ -817,6 +823,7 @@ module ietf-interfaces {
           range "1..2147483647";
         }
         mandatory true;
+        status deprecated;
         description
           "The ifIndex value for the ifEntry represented by this
            interface.";
@@ -826,6 +833,7 @@ module ietf-interfaces {
 
       leaf phys-address {
         type yang:phys-address;
+        status deprecated;
         description
           "The interface's address at its protocol sub-layer.  For
            example, for an 802.x interface, this object normally
@@ -840,6 +848,7 @@ module ietf-interfaces {
 
       leaf-list higher-layer-if {
         type interface-state-ref;
+        status deprecated;
         description
           "A list of references to interfaces layered on top of this
            interface.";
@@ -849,6 +858,7 @@ module ietf-interfaces {
 
       leaf-list lower-layer-if {
         type interface-state-ref;
+        status deprecated;
         description
           "A list of references to interfaces layered underneath this
            interface.";
@@ -858,6 +868,7 @@ module ietf-interfaces {
 
       leaf speed {
         type yang:gauge64;
+        status deprecated;
         units "bits/second";
         description
             "An estimate of the interface's current bandwidth in bits
@@ -872,12 +883,14 @@ module ietf-interfaces {
       }
 
       container statistics {
+        status deprecated;
         description
           "A collection of interface-related statistics objects.";
 
         leaf discontinuity-time {
           type yang:date-and-time;
           mandatory true;
+          status deprecated;
           description
             "The time on the most recent occasion at which any one or
              more of this interface's counters suffered a
@@ -889,6 +902,7 @@ module ietf-interfaces {
 
         leaf in-octets {
           type yang:counter64;
+          status deprecated;
           description
             "The total number of octets received on the interface,
              including framing characters.
@@ -903,6 +917,7 @@ module ietf-interfaces {
 
         leaf in-unicast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The number of packets, delivered by this sub-layer to a
              higher (sub-)layer, that were not addressed to a
@@ -918,6 +933,7 @@ module ietf-interfaces {
 
         leaf in-broadcast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The number of packets, delivered by this sub-layer to a
              higher (sub-)layer, that were addressed to a broadcast
@@ -934,6 +950,7 @@ module ietf-interfaces {
 
         leaf in-multicast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The number of packets, delivered by this sub-layer to a
              higher (sub-)layer, that were addressed to a multicast
@@ -951,6 +968,7 @@ module ietf-interfaces {
 
         leaf in-discards {
           type yang:counter32;
+          status deprecated;
           description
             "The number of inbound packets that were chosen to be
              discarded even though no errors had been detected to
@@ -968,6 +986,7 @@ module ietf-interfaces {
 
         leaf in-errors {
           type yang:counter32;
+          status deprecated;
           description
             "For packet-oriented interfaces, the number of inbound
              packets that contained errors preventing them from being
@@ -987,6 +1006,7 @@ module ietf-interfaces {
 
         leaf in-unknown-protos {
           type yang:counter32;
+          status deprecated;
           description
             "For packet-oriented interfaces, the number of packets
              received via the interface that were discarded because
@@ -1009,6 +1029,7 @@ module ietf-interfaces {
 
         leaf out-octets {
           type yang:counter64;
+          status deprecated;
           description
             "The total number of octets transmitted out of the
              interface, including framing characters.
@@ -1023,6 +1044,7 @@ module ietf-interfaces {
 
         leaf out-unicast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The total number of packets that higher-level protocols
              requested be transmitted, and that were not addressed
@@ -1039,6 +1061,7 @@ module ietf-interfaces {
 
         leaf out-broadcast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The total number of packets that higher-level protocols
              requested be transmitted, and that were addressed to a
@@ -1056,6 +1079,7 @@ module ietf-interfaces {
 
         leaf out-multicast-pkts {
           type yang:counter64;
+          status deprecated;
           description
             "The total number of packets that higher-level protocols
              requested be transmitted, and that were addressed to a
@@ -1075,6 +1099,7 @@ module ietf-interfaces {
 
         leaf out-discards {
           type yang:counter32;
+          status deprecated;
           description
             "The number of outbound packets that were chosen to be
              discarded even though no errors had been detected to
@@ -1092,6 +1117,7 @@ module ietf-interfaces {
 
         leaf out-errors {
           type yang:counter32;
+          status deprecated;
           description
             "For packet-oriented interfaces, the number of outbound
              packets that could not be transmitted because of errors.

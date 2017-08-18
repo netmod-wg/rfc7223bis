@@ -29,6 +29,10 @@ The "/interfaces-state" subtree with "config false" data nodes is
 deprecated.  All "config false" data nodes are now present in the
 "/interfaces" subtree.
 
+Servers that do not implement NMDA, or that wish to support clients
+that do not implement NMDA, MAY implement the deprecated
+"/interfaces-state" tree.
+
 ** Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -132,7 +136,8 @@ presented in ^module^.
 * Interfaces Data Model
 
 This document defines the YANG module "ietf-interfaces", which has the
-following structure:
+following structure, excluding the deprecated "/interfaces-state"
+subtree:
 
 !! include-figure ietf-interfaces.tree
 
