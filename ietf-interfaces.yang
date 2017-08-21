@@ -868,8 +868,8 @@ module ietf-interfaces {
 
       leaf speed {
         type yang:gauge64;
-        status deprecated;
         units "bits/second";
+        status deprecated;
         description
             "An estimate of the interface's current bandwidth in bits
              per second.  For interfaces that do not vary in

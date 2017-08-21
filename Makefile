@@ -86,11 +86,11 @@ validate-ex-yang:
 
 validate-ex-xml:
 	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
-	  yang2dsdl -j -t get-reply -v ex-get-data-reply.xml \
+	  yang2dsdl -x -j -t get-reply -v ex-get-data-reply.xml \
 	  ../datastore-dt/ietf-origin.yang \
 	  ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang;
 	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
-	  yang2dsdl -j -t get-config-reply -v ex-get-config-reply.xml \
+	  yang2dsdl -x -j -t get-config-reply -v ex-get-config-reply.xml \
 	  ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang
 
 ${references_xml}: ${references_src}
@@ -103,7 +103,7 @@ ${output}.txt: ${output}.xml
 	$(xml2rfc) $< -o $@ --text
 
 %.tree: %.yang
-	$(pyang) -f tree --tree-line-length 68 $< > $@
+	$(pyang) --max-status current -f tree --tree-line-length 68 $< > $@
 
 ${output}.html: ${draft} ${references_xml} $(trees) $(load) $(yang)
 	@echo "Generating $@ ..."
