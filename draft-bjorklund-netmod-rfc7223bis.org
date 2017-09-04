@@ -53,10 +53,10 @@ The following terms are used within this document:
 
 - user-controlled interface: An interface is said to be
   user-controlled if the creation of the interface is controlled by
-  adding explicit interface configuration to the running configuration
-  datastore and the removal of the interface is controlled by removing
-  explicit interface configuration from the running configuration
-  datastore.  Examples are VLAN interfaces configured on a
+  adding explicit interface configuration to the intended configuration
+  and the removal of the interface is controlled by removing
+  explicit interface configuration from the intended configuration.
+  Examples are VLAN interfaces configured on a
   system-controlled Ethernet interface.
 
 The following terms are defined in
@@ -66,9 +66,8 @@ The following terms are defined in
 - server
 - configuration
 - system state
-- operational state datastore
-- running configuration datastore
-- startup configuration datastore
+- operational state
+- intended configuration
 
 The following terms are defined in ^RFC7950^ and are not redefined
 here:
@@ -188,8 +187,8 @@ document.  See ^router-restricted^ and ^router-arbitrary^ for
 examples.
 
 When a system-controlled interface is created in the operational state
-datastore by the system, the system tries to apply the interface
-configuration in the intended configuration datastore with the same
+by the system, the system tries to apply the interface
+configuration in the intended configuration with the same
 name as the new interface.  If no such interface configuration is
 found, or if the configured type does not match the real interface
 type, the system creates the interface without applying explicit
@@ -254,7 +253,7 @@ hierarchy.
 * Relationship to the IF-MIB
 
 If the device implements the IF-MIB ^RFC2863^, each entry in the
-"/interfaces/interface" list in the operational state datastore is
+"/interfaces/interface" list in the operational state is
 typically mapped to one ifEntry.  The "if-index" leaf MUST contain the
 value of the corresponding ifEntry's ifIndex.
 
