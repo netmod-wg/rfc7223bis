@@ -410,7 +410,7 @@ defined.
 
 !! include-figure ex-vlan.yang
 
-* Example: NETCONF <get-config> Reply @get@
+* Example: NETCONF <get-config> Reply
 
 This section gives an example of a reply to the NETCONF <get-config>
 request for <running> for a device that implements the example data
@@ -418,7 +418,7 @@ models above.
 
 !! include-figure ex-get-config-reply.load
 
-* Example: NETCONF <get-data> Reply @get@
+* Example: NETCONF <get-data> Reply
 
 This section gives an example of a reply to the NETCONF <get-data>
 request for <operational> for a device that implements the example
