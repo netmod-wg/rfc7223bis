@@ -2,7 +2,7 @@
 # https://pypi.python.org/pypi/xml2rfc
 # https://github.com/Juniper/libslax/tree/master/doc/oxtradoc
 
-output_base = draft-bjorklund-netmod-rfc7223bis
+output_base = draft-ietf-netmod-rfc7223bis
 draft = $(output_base).org
 examples =
 trees = ietf-interfaces.tree
