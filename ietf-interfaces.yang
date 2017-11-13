@@ -34,7 +34,7 @@ module ietf-interfaces {
      This version of this YANG module is part of RFC XXXX; see
      the RFC itself for full legal notices.";
 
-  revision 2017-08-17 {
+  revision 2017-11-13 {
     description
       "Updated to support NMDA.";
     reference
@@ -217,8 +217,7 @@ module ietf-interfaces {
            has been initialized, as described in RFC 2863.
 
            Changes in this leaf in the intended configuration are
-           reflected in ifAdminStatus, but if ifAdminStatus is
-           changed over SNMP, this leaf is not affected.";
+           reflected in ifAdminStatus.";
         reference
           "RFC 2863: The Interfaces Group MIB - ifAdminStatus";
       }
