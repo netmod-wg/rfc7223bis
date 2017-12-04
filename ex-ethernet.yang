@@ -38,7 +38,7 @@ module ex-ethernet {
           }
         }
       }
-      leaf duplexx {
+      leaf duplex {
         type enumeration {
           enum "half";
           enum "full";
