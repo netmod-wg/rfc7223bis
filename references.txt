@@ -6,6 +6,7 @@
     ietf-ref RFC6020;
     ietf-ref RFC6991;
     ietf-ref RFC7950;
+    ietf-ref RFC8174;
     ietf-ref I-D.ietf-netmod-revised-datastores;
 }}
 
@@ -15,4 +16,5 @@
     ietf-ref RFC6241;
     ietf-ref RFC6242;
     ietf-ref RFC6536;
+    ietf-ref I-D.ietf-netmod-yang-tree-diagrams;
 }}

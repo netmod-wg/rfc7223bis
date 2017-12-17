@@ -35,10 +35,11 @@ that do not implement NMDA, MAY implement the deprecated
 
 ** Terminology
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
 "OPTIONAL" in this document are to be interpreted as described in BCP
-14 ^RFC2119^.
+14, ^RFC2119^ ^RFC8174^ when, and only when, they appear in all capitals,
+as shown here.
 
 The following terms are used within this document:
 
@@ -79,18 +80,8 @@ here:
 
 ** Tree Diagrams
 
-A simplified graphical representation of the data model is used in
-this document.  The meaning of the symbols in these
-diagrams is as follows:
-
-- Brackets "[" and "]" enclose list keys.
-- Abbreviations before data node names: "rw" means configuration
-(read-write), and "ro" means state data (read-only).
-- Symbols after data node names: "?" means an optional node, "!" means
- a presence container, and "*" denotes either a list or a leaf-list.
-- Parentheses enclose choice and case nodes, and case nodes are also
-marked with a colon (":").
-- Ellipsis ("...") stands for contents of subtrees that are not shown.
+Tree diagrams used in this document follow the notation defined in
+^I-D.ietf-netmod-yang-tree-diagrams^.
 
 * Objectives
 
