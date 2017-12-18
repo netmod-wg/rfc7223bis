@@ -199,7 +199,7 @@ the implementation and cannot be assumed in all cases.
 ** Interface References
 
 An interface is identified by its name, which is unique within the
-server.  This property is captured in the "interface-ref" and typedef,
+server.  This property is captured in the "interface-ref" typedef,
 which other YANG modules SHOULD use when they need to reference an
 interface.
 
@@ -274,10 +274,10 @@ versions: one with 32 bits and one with 64 bits.  The 64-bit versions
 were added to support high-speed interfaces with a data rate greater
 than 20,000,000 bits/second.  Today's implementations generally
 support such high-speed interfaces, and hence only 64-bit counters are
-provided in this data model.  Note that NETCONF and SNMP may differ in
-the time granularity in which they provide access to the counters.
-For example, it is common that SNMP implementations cache counter
-values for some time.
+provided in this data model.  Note that the server that implement this
+module and an SNMP agent may differ in the time granularity in which
+they provide access to the counters.  For example, it is common that
+SNMP implementations cache counter values for some time.
 
 The objects ifDescr and ifConnectorPresent from the IF-MIB are not
 mapped to the "ietf-interfaces" module.
@@ -418,6 +418,9 @@ models above.
 This section gives an example of a reply to the NETCONF <get-data>
 request for <operational> for a device that implements the example
 data models above.
+
+This example uses the "origin" annotation, which is defined in the
+module "ietf-origin" ^I-D.ietf-netmod-revised-datastores^.
 
 !! include-figure ex-get-data-reply.load
 
