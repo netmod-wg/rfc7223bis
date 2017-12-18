@@ -86,7 +86,7 @@ validate-ex-yang:
 
 validate-ex-xml:
 	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
-	  yang2dsdl -x -j -t get-reply -v ex-get-data-reply.xml \
+	  yang2dsdl -x -j -t get-data-reply -v ex-get-data-reply.xml \
 	  ../datastore-dt/ietf-origin.yang \
 	  ietf-interfaces.yang ex-ethernet.yang ex-vlan.yang;
 	env YANG_MODPATH=../iana-if-type:$(YANG_MODPATH) \
