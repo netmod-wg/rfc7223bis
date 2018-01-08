@@ -1,4 +1,4 @@
-module ex-vlan {
+module example-vlan {
   namespace "http://example.com/vlan";
   prefix "vlan";
 

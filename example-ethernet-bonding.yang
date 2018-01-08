@@ -1,4 +1,4 @@
-module ex-ethernet-bonding {
+module example-ethernet-bonding {
   namespace "http://example.com/ethernet-bonding";
   prefix "bond";
 
@@ -8,8 +8,6 @@ module ex-ethernet-bonding {
   import iana-if-type {
     prefix ianaift;
   }
-
-
 
   augment "/if:interfaces/if:interface" {
     when "if:type = 'ianaift:ieee8023adLag'";

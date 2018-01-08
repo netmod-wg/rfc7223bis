@@ -1,4 +1,4 @@
-module ex-ethernet {
+module example-ethernet {
   namespace "http://example.com/ethernet";
   prefix "eth";
 

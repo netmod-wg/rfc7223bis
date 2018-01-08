@@ -388,7 +388,7 @@ conditionally augmented to the operational interface list.  The
 example is not intended as a complete module for Ethernet
 configuration.
 
-!! include-figure ex-ethernet.yang
+!! include-figure example-ethernet.yang
 
 * Example: Ethernet Bonding Interface Module @eth-bonding@
 
@@ -396,14 +396,14 @@ This section gives an example of how interface layering can be
 defined.  An Ethernet bonding interface that bonds
 several Ethernet interfaces into one logical interface is defined.
 
-!! include-figure ex-ethernet-bonding.yang
+!! include-figure example-ethernet-bonding.yang
 
 * Example: VLAN Interface Module @vlan@
 
 This section gives an example of how a VLAN interface module can be
 defined.
 
-!! include-figure ex-vlan.yang
+!! include-figure example-vlan.yang
 
 * Example: NETCONF <get-config> Reply
 
@@ -428,8 +428,8 @@ module "ietf-origin" ^I-D.ietf-netmod-revised-datastores^.
 
 This section gives examples of some implementation strategies.
 
-The examples make use of the example data model "ex-vlan" (see ^vlan^)
-to show how user-controlled interfaces can be configured.
+The examples make use of the example data model "example-vlan" (see
+^vlan^) to show how user-controlled interfaces can be configured.
 
 ** Router with Restricted Interface Names @router-restricted@
 
