@@ -318,7 +318,7 @@ objects in the IF-MIB.
 
 This YANG module imports typedefs from ^RFC6991^.
 
-!! include-figure ietf-interfaces.yang extract-to="ietf-interfaces@2017-12-16.yang"
+!! include-figure ietf-interfaces.yang extract-to="ietf-interfaces@2018-01-09.yang"
 
 * IANA Considerations @iana@
 
