@@ -18,7 +18,7 @@
         <phys-address>00:01:02:03:04:05</phys-address>
         <statistics>
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
-          <!-- counters now shown here -->
+          <!-- counters not shown here -->
         </statistics>
       </interface>
 
@@ -33,7 +33,7 @@
         <higher-layer-if>eth1.10</higher-layer-if>
         <statistics>
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
-          <!-- counters now shown here -->
+          <!-- counters not shown here -->
         </statistics>
         <vlan:vlan-tagging>true</vlan:vlan-tagging>
       </interface>
@@ -48,7 +48,7 @@
         <lower-layer-if>eth1</lower-layer-if>
         <statistics>
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
-          <!-- counters now shown here -->
+          <!-- counters not shown here -->
         </statistics>
         <vlan:base-interface>eth1</vlan:base-interface>
         <vlan:vlan-id>10</vlan:vlan-id>
@@ -64,7 +64,7 @@
         <phys-address>00:01:02:03:04:07</phys-address>
         <statistics>
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
-          <!-- counters now shown here -->
+          <!-- counters not shown here -->
         </statistics>
       </interface>
 
@@ -77,7 +77,7 @@
         <if-index>1</if-index>
         <statistics>
           <discontinuity-time><!-- PPL -->2013-04-01T03:00:00+00:00</discontinuity-time>
-          <!-- counters now shown here -->
+          <!-- counters not shown here -->
         </statistics>
       </interface>
 
